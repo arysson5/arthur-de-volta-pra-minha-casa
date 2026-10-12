@@ -1,4 +1,5 @@
 import { ALTURA, estiloTexto, fonte, LARGURA, TILE, u } from '../constantes';
+import { enquadrarMenu, esticarLargura, observarTela, rem } from '../tela';
 import { estado, lerSave, reiniciarEstado } from '../estado';
 import { encaixar } from '../personagens';
 
@@ -9,8 +10,15 @@ export class MenuCena extends Phaser.Scene {
 
   create(): void {
     this.scene.stop('hud');
-    this.add.image(0, 0, 'fundo-caatinga').setOrigin(0).setDisplaySize(LARGURA, ALTURA);
-    this.add.rectangle(0, u(188), LARGURA, u(160), 0x0e1520, 0.35).setOrigin(0);
+    const fundo = this.add.image(0, 0, 'fundo-caatinga').setOrigin(0);
+    const faixaTitulo = this.add.rectangle(0, u(188), LARGURA, u(160), 0x0e1520, 0.35).setOrigin(0);
+    const ajustar = (): void => {
+      const faixa = enquadrarMenu(this);
+      esticarLargura(fundo, faixa);
+      esticarLargura(faixaTitulo, faixa, u(188), u(160));
+    };
+    ajustar();
+    observarTela(this, ajustar);
 
     this.add.text(LARGURA / 2, u(36), 'Arthur', estiloTexto(fonte(28), '#fff6e8')).setOrigin(0.5);
     this.add
@@ -54,7 +62,9 @@ export class MenuCena extends Phaser.Scene {
   }
 
   private botao(x: number, y: number, rotulo: string, fundo: number, cor: string, aoClicar: () => void): void {
-    const caixa = this.add.rectangle(x, y, u(200), u(36), fundo).setInteractive({ useHandCursor: true });
+    const caixa = this.add
+      .rectangle(x, y, Math.max(u(220), rem(13)), Math.max(u(52), rem(3.6)), fundo)
+      .setInteractive({ useHandCursor: true });
     this.add.text(x, y, rotulo, estiloTexto(fonte(16), cor)).setOrigin(0.5);
     caixa.on('pointerdown', aoClicar);
   }

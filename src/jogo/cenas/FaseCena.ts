@@ -1,6 +1,7 @@
 import { Arthur } from '../arthur';
-import { ALTURA_VISAO, estiloTexto, fonte, GRAVIDADE, LARGURA, TILE, u, VIDAS_INICIAIS } from '../constantes';
+import { estiloTexto, fonte, GRAVIDADE, TILE, u, VIDAS_INICIAIS } from '../constantes';
 import { Controles, zerarVirtual } from '../controles';
+import { observarTela, rem } from '../tela';
 import { estado, reiniciarEstado, salvar } from '../estado';
 import { fases, type FaseDef } from '../fases';
 import { encaixar } from '../personagens';
@@ -55,6 +56,7 @@ export class FaseCena extends Phaser.Scene {
   private mundoLargura = 0;
   private mundoAltura = 0;
   private animais: { sprite: Phaser.GameObjects.Sprite; vel: number }[] = [];
+  private fundoImagem?: Phaser.GameObjects.Image;
 
   constructor() {
     super('fase');
@@ -90,7 +92,9 @@ export class FaseCena extends Phaser.Scene {
     this.mundoAltura = mapa.length * TILE;
     this.mundoLargura = mapa[0].length * TILE;
 
-    this.add.image(0, 0, this.def.fundo).setOrigin(0).setScrollFactor(0).setDepth(-10).setDisplaySize(LARGURA, ALTURA_VISAO);
+    this.fundoImagem = this.add.image(0, 0, this.def.fundo).setOrigin(0).setScrollFactor(0).setDepth(-10);
+    this.enquadrarFase();
+    observarTela(this, () => this.enquadrarFase());
 
     let inicioX = u(48);
     let inicioY = u(240);
@@ -126,8 +130,7 @@ export class FaseCena extends Phaser.Scene {
       if (!bicho.voa) this.physics.add.collider(bicho.sprite, this.solidos);
     }
 
-    this.cameras.main.setSize(LARGURA, ALTURA_VISAO);
-    this.cameras.main.setViewport(0, 0, LARGURA, ALTURA_VISAO);
+    this.enquadrarFase();
     this.cameras.main.setBounds(0, 0, this.mundoLargura, this.mundoAltura);
     this.cameras.main.startFollow(this.arthur, true, 0.14, 0.14);
     this.cameras.main.setRoundPixels(false);
@@ -154,6 +157,20 @@ export class FaseCena extends Phaser.Scene {
     this.events.once('shutdown', () => zerarVirtual());
   }
 
+  private enquadrarFase(): void {
+    const cam = this.cameras.main;
+    const zoom = this.scale.height / Math.max(this.mundoAltura, 1);
+    cam.setSize(this.scale.width, this.scale.height);
+    cam.setViewport(0, 0, this.scale.width, this.scale.height);
+    cam.setZoom(zoom);
+    cam.setRoundPixels(false);
+    const origemX = cam.width / 2;
+    const origemY = cam.height / 2;
+    this.fundoImagem
+      ?.setPosition(origemX * (1 - 1 / zoom), origemY * (1 - 1 / zoom))
+      .setDisplaySize(cam.width / zoom, cam.height / zoom);
+  }
+
   private abrirHud(): void {
     this.scene.launch('hud');
     this.scene.bringToTop('hud');
@@ -162,9 +179,12 @@ export class FaseCena extends Phaser.Scene {
   private abrirAjuda(): void {
     this.ajuda = true;
     this.arthur.travado = true;
-    const cx = LARGURA / 2;
-    const cy = ALTURA_VISAO / 2;
-    const painel = this.add.rectangle(cx, cy, u(430), u(220), 0x101826, 0.96).setScrollFactor(0).setDepth(40);
+    const zoom = this.cameras.main.zoom || 1;
+    const visivel = this.scale.width / zoom;
+    const cx = this.scale.width / 2;
+    const cy = this.scale.height / 2;
+    const painelLargura = Math.min(u(430), visivel * 0.9);
+    const painel = this.add.rectangle(cx, cy, painelLargura, u(220), 0x101826, 0.96).setScrollFactor(0).setDepth(40);
     const titulo = this.add
       .text(cx, cy - u(86), this.def.titulo, estiloTexto(fonte(18), '#f0c43a'))
       .setOrigin(0.5)
@@ -174,14 +194,14 @@ export class FaseCena extends Phaser.Scene {
       .text(cx, cy - u(18), this.def.objetivo, {
         ...estiloTexto(fonte(13), '#fff6e8'),
         align: 'center',
-        wordWrap: { width: u(390) },
+        wordWrap: { width: painelLargura - u(36) },
         lineSpacing: 6,
       })
       .setOrigin(0.5)
       .setScrollFactor(0)
       .setDepth(41);
     const botao = this.add
-      .rectangle(cx, cy + u(78), u(180), u(36), 0xf0c43a, 0.45)
+      .rectangle(cx, cy + u(78), Math.max(u(200), rem(12)), Math.max(u(48), rem(3.4)), 0xf0c43a, 0.45)
       .setScrollFactor(0)
       .setDepth(41);
     const rotulo = this.add
@@ -431,7 +451,7 @@ export class FaseCena extends Phaser.Scene {
   private animaisFundo(delta: number): void {
     for (const animal of this.animais) {
       animal.sprite.x -= animal.vel * (delta / 1000);
-      if (animal.sprite.x < -u(40)) animal.sprite.x = LARGURA + u(30);
+      if (animal.sprite.x < -u(40)) animal.sprite.x = this.cameras.main.displayWidth + u(30);
     }
   }
 

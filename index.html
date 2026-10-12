@@ -14,15 +14,116 @@
     <link rel="icon" href="./icone-192.png" />
     <link rel="apple-touch-icon" href="./icone-192.png" />
     <style>
+      html {
+        font-size: clamp(15px, 4.8dvmin, 26px);
+      }
+
       html,
       body,
       #jogo {
         margin: 0;
         width: 100%;
         height: 100%;
+        height: 100dvh;
         background: #0e1520;
         overflow: hidden;
         touch-action: none;
+      }
+
+      #jogo canvas {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+      }
+
+      #controles {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 30;
+        pointer-events: none;
+      }
+
+      html.toque.jogando #controles {
+        display: block;
+      }
+
+      #controles .lado {
+        position: absolute;
+        bottom: calc(0.7rem + env(safe-area-inset-bottom));
+        display: flex;
+        align-items: flex-end;
+        gap: 0.5rem;
+        pointer-events: none;
+      }
+
+      #controles .esq {
+        left: calc(0.7rem + env(safe-area-inset-left));
+      }
+
+      #controles .dir {
+        right: calc(0.7rem + env(safe-area-inset-right));
+      }
+
+      #controles button {
+        pointer-events: auto;
+        touch-action: none;
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 5.4rem;
+        height: 5.4rem;
+        margin: 0;
+        padding: 0;
+        border: 0.16rem solid #f0c43a;
+        border-radius: 1.15rem;
+        background: rgba(16, 24, 38, 0.78);
+        color: #fff6e8;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        font-size: 1.7rem;
+        font-weight: 700;
+        line-height: 1;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      #controles button.preso {
+        transform: scale(0.94);
+        background: rgba(240, 196, 58, 0.92);
+        color: #1a120c;
+      }
+
+      #controles .sumir {
+        width: 5.8rem;
+        height: 5.8rem;
+        overflow: hidden;
+        font-size: 0.95rem;
+        letter-spacing: 0.04em;
+      }
+
+      #controles .sumir::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: calc(var(--carga, 1) * 100%);
+        background: rgba(240, 196, 58, 0.5);
+      }
+
+      #controles .sumir span {
+        position: relative;
+        z-index: 1;
+      }
+
+      #controles .pulo {
+        width: 7rem;
+        height: 7rem;
+        font-size: 1.25rem;
+        background: rgba(240, 196, 58, 0.94);
+        color: #1a120c;
       }
 
       #vire {
@@ -39,17 +140,17 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 18px;
+        gap: 1rem;
         background: #0e1520;
         color: #fff6e8;
         text-align: center;
       }
 
       .aparelho {
-        width: 78px;
-        height: 132px;
-        border: 4px solid #f0c43a;
-        border-radius: 16px;
+        width: 4.4rem;
+        height: 7.4rem;
+        border: 0.22rem solid #f0c43a;
+        border-radius: 0.9rem;
         position: relative;
         animation: deitar 2.6s ease-in-out infinite;
       }
@@ -80,16 +181,16 @@
       .titulo {
         margin: 8px 0 0;
         font-family: 'Arial Black', Impact, 'Segoe UI', sans-serif;
-        font-size: 42px;
+        font-size: 2.4rem;
         line-height: 1;
         letter-spacing: 0.5px;
       }
 
       .dica {
         margin: 0;
-        max-width: 280px;
+        max-width: 16rem;
         font-family: 'Segoe UI', system-ui, sans-serif;
-        font-size: 18px;
+        font-size: 1.15rem;
         line-height: 1.35;
         color: #f0c43a;
       }
@@ -117,6 +218,17 @@
   </head>
   <body>
     <div id="jogo"></div>
+    <nav id="controles" aria-label="Controles">
+      <div class="lado esq">
+        <button type="button" data-acao="esquerda" aria-label="Esquerda">◄</button>
+        <button type="button" data-acao="baixo" aria-label="Agachar">▼</button>
+        <button type="button" data-acao="direita" aria-label="Direita">►</button>
+      </div>
+      <div class="lado dir">
+        <button type="button" class="sumir" data-acao="invis" aria-label="Sumir"><span>SUMIR</span></button>
+        <button type="button" class="pulo" data-acao="pulo" aria-label="Pular">PULO</button>
+      </div>
+    </nav>
     <div id="vire">
       <div class="aparelho" aria-hidden="true"></div>
       <p class="titulo">Deite a tela</p>

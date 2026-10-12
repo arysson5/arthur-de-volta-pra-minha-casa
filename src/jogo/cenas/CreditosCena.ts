@@ -1,4 +1,5 @@
 import { ALTURA, ESCALA, estiloTexto, fonte, LARGURA, letreiro, u } from '../constantes';
+import { enquadrarMenu, esticarLargura, observarTela, rem } from '../tela';
 import { limparSave, reiniciarEstado } from '../estado';
 import { mensagem, type Verso } from '../mensagem';
 
@@ -16,8 +17,8 @@ export class CreditosCena extends Phaser.Scene {
     this.linhas = [];
     this.cameras.main.fadeIn(900, 6, 10, 22);
 
-    this.add.image(0, 0, 'fundo-noite').setOrigin(0).setDisplaySize(LARGURA, ALTURA);
-    this.add.rectangle(0, 0, LARGURA, ALTURA, 0x050814, 0.28).setOrigin(0);
+    const noite = this.add.image(0, 0, 'fundo-noite').setOrigin(0);
+    const vel = this.add.rectangle(0, 0, LARGURA, ALTURA, 0x050814, 0.28).setOrigin(0);
 
     for (let i = 0; i < 26; i += 1) {
       const estrela = this.add
@@ -66,8 +67,17 @@ export class CreditosCena extends Phaser.Scene {
       }
     });
 
-    this.add.rectangle(0, 0, LARGURA, u(12), 0x070b12).setOrigin(0).setDepth(6);
-    this.add.rectangle(0, ALTURA - u(12), LARGURA, u(12), 0x070b12).setOrigin(0).setDepth(6);
+    const barraCima = this.add.rectangle(0, 0, LARGURA, u(12), 0x070b12).setOrigin(0).setDepth(6);
+    const barraBaixo = this.add.rectangle(0, ALTURA - u(12), LARGURA, u(12), 0x070b12).setOrigin(0).setDepth(6);
+    const ajustar = (): void => {
+      const faixa = enquadrarMenu(this);
+      esticarLargura(noite, faixa);
+      esticarLargura(vel, faixa);
+      esticarLargura(barraCima, faixa, 0, u(12));
+      esticarLargura(barraBaixo, faixa, ALTURA - u(12), u(12));
+    };
+    ajustar();
+    observarTela(this, ajustar);
   }
 
   update(tempo: number, delta: number): void {
@@ -97,7 +107,7 @@ export class CreditosCena extends Phaser.Scene {
       .setDepth(7)
       .setScale(0.2, 1);
     const caixa = this.add
-      .rectangle(LARGURA / 2, ALTURA / 2, u(250), u(46), 0xf0c43a)
+      .rectangle(LARGURA / 2, ALTURA / 2, Math.max(u(280), rem(16)), Math.max(u(56), rem(3.6)), 0xf0c43a)
       .setInteractive({ useHandCursor: true })
       .setDepth(7)
       .setAlpha(0);

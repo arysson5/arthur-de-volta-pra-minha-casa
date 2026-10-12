@@ -1,4 +1,5 @@
 import { ALTURA, estiloTexto, fonte, LARGURA, letreiro, TILE, u } from '../constantes';
+import { enquadrarMenu, esticarLargura, observarTela, rem } from '../tela';
 import { encaixar } from '../personagens';
 
 interface Atributo {
@@ -74,7 +75,10 @@ export class ElencoCena extends Phaser.Scene {
     this.pontos = [];
     this.scene.stop('hud');
 
-    this.add.rectangle(0, 0, LARGURA, ALTURA, 0x101826).setOrigin(0);
+    const fundo = this.add.rectangle(0, 0, LARGURA, ALTURA, 0x101826).setOrigin(0);
+    const ajustar = (): void => esticarLargura(fundo, enquadrarMenu(this));
+    ajustar();
+    observarTela(this, ajustar);
     this.add.text(LARGURA / 2, u(28), 'O PESSOAL', letreiro(fonte(22), '#fff6e8')).setOrigin(0.5);
 
     this.seta(u(46), -1);
@@ -86,7 +90,7 @@ export class ElencoCena extends Phaser.Scene {
     }
 
     const mapa = this.add
-      .rectangle(LARGURA / 2, ALTURA - u(32), u(240), u(40), 0xf0c43a)
+      .rectangle(LARGURA / 2, ALTURA - u(32), Math.max(u(260), rem(15)), Math.max(u(52), rem(3.6)), 0xf0c43a)
       .setInteractive({ useHandCursor: true });
     this.add.text(LARGURA / 2, ALTURA - u(32), 'O mapa da viagem', estiloTexto(fonte(14), '#1a120c')).setOrigin(0.5);
     mapa.on('pointerdown', () => {

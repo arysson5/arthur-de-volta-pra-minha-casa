@@ -1,4 +1,5 @@
 import { ALTURA, estiloTexto, fonte, LARGURA, letreiro, TILE, u } from '../constantes';
+import { enquadrarMenu, esticarLargura, observarTela, rem } from '../tela';
 import { estado, lerSave, limparSave, reiniciarEstado } from '../estado';
 import { fases } from '../fases';
 import { encaixar } from '../personagens';
@@ -13,9 +14,17 @@ export class MapaCena extends Phaser.Scene {
 
   create(): void {
     this.scene.stop('hud');
-    this.add.image(0, 0, 'fundo-caatinga').setOrigin(0).setDisplaySize(LARGURA, ALTURA);
-    this.add.rectangle(LARGURA / 2, 0, LARGURA / 2, ALTURA, 0x16324a).setOrigin(0);
-    this.add.rectangle(0, 0, LARGURA, u(52), 0x0e1520, 0.72).setOrigin(0);
+    const fundo = this.add.image(0, 0, 'fundo-caatinga').setOrigin(0);
+    const azul = this.add.rectangle(LARGURA / 2, 0, LARGURA / 2, ALTURA, 0x16324a).setOrigin(0);
+    const faixaTopo = this.add.rectangle(0, 0, LARGURA, u(52), 0x0e1520, 0.72).setOrigin(0);
+    const ajustar = (): void => {
+      const faixa = enquadrarMenu(this);
+      esticarLargura(fundo, faixa);
+      esticarLargura(faixaTopo, faixa, 0, u(52));
+      azul.setPosition(LARGURA / 2, 0).setSize(faixa.largura / 2, faixa.altura);
+    };
+    ajustar();
+    observarTela(this, ajustar);
 
     this.add.text(u(28), u(36), 'MARANHÃO', letreiro(fonte(18), '#f0c43a')).setOrigin(0, 0.5).setDepth(4);
     this.add.text(LARGURA / 2, u(36), 'O CAMINHO', letreiro(fonte(16), '#fff6e8')).setOrigin(0.5).setDepth(4);
@@ -99,7 +108,10 @@ export class MapaCena extends Phaser.Scene {
   }
 
   private botao(x: number, y: number, rotulo: string, fundo: number, cor: string, aoClicar: () => void): void {
-    const caixa = this.add.rectangle(x, y, u(190), u(40), fundo).setInteractive({ useHandCursor: true }).setDepth(6);
+    const caixa = this.add
+      .rectangle(x, y, Math.max(u(210), rem(12)), Math.max(u(52), rem(3.6)), fundo)
+      .setInteractive({ useHandCursor: true })
+      .setDepth(6);
     this.add.text(x, y, rotulo, estiloTexto(fonte(15), cor)).setOrigin(0.5).setDepth(7);
     caixa.on('pointerdown', aoClicar);
   }

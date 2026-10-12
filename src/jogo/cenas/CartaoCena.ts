@@ -1,4 +1,5 @@
 import { ALTURA, estiloTexto, fonte, LARGURA, u } from '../constantes';
+import { enquadrarMenu, esticarLargura, observarTela } from '../tela';
 
 interface DadosCartao {
   texto?: string;
@@ -14,7 +15,10 @@ export class CartaoCena extends Phaser.Scene {
 
   create(data: DadosCartao): void {
     this.seguiu = false;
-    this.add.rectangle(0, 0, LARGURA, ALTURA, 0x101826).setOrigin(0);
+    const fundo = this.add.rectangle(0, 0, LARGURA, ALTURA, 0x101826).setOrigin(0);
+    const ajustar = (): void => esticarLargura(fundo, enquadrarMenu(this));
+    ajustar();
+    observarTela(this, ajustar);
     this.add.text(LARGURA / 2, ALTURA / 2 - u(10), data.texto ?? '', estiloTexto(fonte(20), '#fff6e8')).setOrigin(0.5);
     this.add.text(LARGURA / 2, ALTURA / 2 + u(32), 'toque para seguir', estiloTexto(fonte(12), '#f0c43a')).setOrigin(0.5);
 

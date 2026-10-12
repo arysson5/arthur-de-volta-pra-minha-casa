@@ -1,5 +1,6 @@
 import { ALTURA, estiloTexto, fonte, LARGURA, letreiro, TILE, u } from '../constantes';
 import { encaixar } from '../personagens';
+import { enquadrarMenu, esticarLargura, observarTela, rem } from '../tela';
 
 export class AberturaCena extends Phaser.Scene {
   private seguiu = false;
@@ -14,12 +15,20 @@ export class AberturaCena extends Phaser.Scene {
     this.podePular = false;
     this.scene.stop('hud');
 
-    this.add.image(0, 0, 'fundo-caatinga').setOrigin(0).setDisplaySize(LARGURA, ALTURA);
-    this.add.rectangle(0, 0, LARGURA, ALTURA, 0x0b1018, 0.62).setOrigin(0);
-
+    const fundo = this.add.image(0, 0, 'fundo-caatinga').setOrigin(0);
+    const vel = this.add.rectangle(0, 0, LARGURA, ALTURA, 0x0b1018, 0.62).setOrigin(0);
     const chaoY = ALTURA * 0.86;
-    this.add.rectangle(0, chaoY, LARGURA, ALTURA - chaoY, 0xc4a574).setOrigin(0).setDepth(2);
-    this.add.rectangle(0, chaoY, LARGURA, u(4), 0x8d6a3e).setOrigin(0).setDepth(2);
+    const chao = this.add.rectangle(0, chaoY, LARGURA, ALTURA - chaoY, 0xc4a574).setOrigin(0).setDepth(2);
+    const chaoLinha = this.add.rectangle(0, chaoY, LARGURA, u(4), 0x8d6a3e).setOrigin(0).setDepth(2);
+    const ajustar = (): void => {
+      const faixa = enquadrarMenu(this);
+      esticarLargura(fundo, faixa);
+      esticarLargura(vel, faixa);
+      esticarLargura(chao, faixa, chaoY, ALTURA - chaoY);
+      esticarLargura(chaoLinha, faixa, chaoY, u(4));
+    };
+    ajustar();
+    observarTela(this, ajustar);
 
     const arthur = this.add.sprite(-u(120), chaoY, 'arthur-parado-0').setOrigin(0.5, 1).setDepth(3);
     encaixar(arthur, TILE * 3.6);
@@ -57,7 +66,7 @@ export class AberturaCena extends Phaser.Scene {
 
     const dicaY = chaoY + (ALTURA - chaoY) / 2;
     const dicaFundo = this.add
-      .rectangle(LARGURA / 2, dicaY, u(280), u(22), 0xf0c43a)
+      .rectangle(LARGURA / 2, dicaY, Math.max(u(300), rem(16)), Math.max(u(48), rem(3.2)), 0xf0c43a)
       .setAlpha(0)
       .setDepth(5);
     const dica = this.add
