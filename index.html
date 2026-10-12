@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#1a2744" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Arthur" />
+    <title>Arthur de volta pra minha casa</title>
+    <link rel="icon" href="./icone-192.png" />
+    <link rel="apple-touch-icon" href="./icone-192.png" />
+    <style>
+      html,
+      body,
+      #jogo {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        background: #0e1520;
+        overflow: hidden;
+        touch-action: none;
+      }
+
+      #vire {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        box-sizing: border-box;
+        padding:
+          calc(24px + env(safe-area-inset-top))
+          calc(24px + env(safe-area-inset-right))
+          calc(24px + env(safe-area-inset-bottom))
+          calc(24px + env(safe-area-inset-left));
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        background: #0e1520;
+        color: #fff6e8;
+        text-align: center;
+      }
+
+      .aparelho {
+        width: 78px;
+        height: 132px;
+        border: 4px solid #f0c43a;
+        border-radius: 16px;
+        position: relative;
+        animation: deitar 2.6s ease-in-out infinite;
+      }
+
+      .aparelho::before {
+        content: '';
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        width: 28px;
+        height: 5px;
+        margin-left: -14px;
+        border-radius: 4px;
+        background: #f0c43a;
+      }
+
+      .aparelho::after {
+        content: '';
+        position: absolute;
+        right: 8px;
+        bottom: 10px;
+        left: 8px;
+        height: 72px;
+        border-radius: 6px;
+        background: #1a2744;
+      }
+
+      .titulo {
+        margin: 8px 0 0;
+        font-family: 'Arial Black', Impact, 'Segoe UI', sans-serif;
+        font-size: 42px;
+        line-height: 1;
+        letter-spacing: 0.5px;
+      }
+
+      .dica {
+        margin: 0;
+        max-width: 280px;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        font-size: 18px;
+        line-height: 1.35;
+        color: #f0c43a;
+      }
+
+      @keyframes deitar {
+        0%,
+        18% {
+          transform: rotate(0deg);
+        }
+        42%,
+        68% {
+          transform: rotate(-90deg);
+        }
+        100% {
+          transform: rotate(0deg);
+        }
+      }
+
+      @media (orientation: portrait) and (pointer: coarse) {
+        #vire {
+          display: flex;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="jogo"></div>
+    <div id="vire">
+      <div class="aparelho" aria-hidden="true"></div>
+      <p class="titulo">Deite a tela</p>
+      <p class="dica">Vire o celular de lado para jogar.</p>
+    </div>
+    <script>
+      document.getElementById('vire').addEventListener('click', function () {
+        var tela = document.documentElement;
+        var pedir = tela.requestFullscreen || tela.webkitRequestFullscreen;
+        if (!pedir || !screen.orientation || !screen.orientation.lock) return;
+        Promise.resolve(pedir.call(tela))
+          .then(function () {
+            return screen.orientation.lock('landscape');
+          })
+          .catch(function () {});
+      });
+    </script>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
