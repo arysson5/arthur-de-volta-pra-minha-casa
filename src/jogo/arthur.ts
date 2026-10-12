@@ -6,6 +6,7 @@ import {
   INVISIVEL_MS,
   PULO,
   PULO_BOB,
+  PULO_MINIMO_MS,
   RECARGA_INVIS_MS,
   TILE,
   VELOCIDADE,
@@ -25,6 +26,7 @@ export class Arthur extends Phaser.Physics.Arcade.Sprite {
   invulneravelAte = 0;
   montado = false;
   cortarPulo = false;
+  private impulso = 0;
   olhando = 1;
   travado = false;
   private escalaBase = 1;
@@ -36,7 +38,7 @@ export class Arthur extends Phaser.Physics.Arcade.Sprite {
     this.setOrigin(0.5, 1);
     this.setDepth(5);
     this.setCollideWorldBounds(false);
-    this.setMaxVelocity(200 * ESCALA, 340 * ESCALA);
+    this.setMaxVelocity(240 * ESCALA, 560 * ESCALA);
     this.ajustarTamanho();
     this.play('arthur-parado');
   }
@@ -158,11 +160,17 @@ export class Arthur extends Phaser.Physics.Arcade.Sprite {
       this.coyote = 0;
       this.bufferPulo = 0;
       this.cortarPulo = true;
+      this.impulso = tempo;
       this.agachado = false;
       this.corpoNormal();
       som.pular();
-    } else if (this.cortarPulo && !controles.segurandoPulo() && this.corpo().velocity.y < 0) {
-      this.corpo().setVelocityY(this.corpo().velocity.y * 0.45);
+    } else if (
+      this.cortarPulo &&
+      !controles.segurandoPulo() &&
+      tempo - this.impulso > PULO_MINIMO_MS &&
+      this.corpo().velocity.y < 0
+    ) {
+      this.corpo().setVelocityY(this.corpo().velocity.y * 0.62);
       this.cortarPulo = false;
     }
 

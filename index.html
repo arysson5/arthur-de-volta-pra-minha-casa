@@ -52,19 +52,28 @@
 
       #controles .lado {
         position: absolute;
-        bottom: calc(0.7rem + env(safe-area-inset-bottom));
-        display: flex;
-        align-items: flex-end;
-        gap: 0.5rem;
+        bottom: calc(0.35rem + env(safe-area-inset-bottom));
         pointer-events: none;
       }
 
       #controles .esq {
-        left: calc(0.7rem + env(safe-area-inset-left));
+        left: calc(0.35rem + env(safe-area-inset-left));
+        display: grid;
+        grid-template-columns: 4.8rem 4.8rem;
+        gap: 0.4rem;
+      }
+
+      #controles .esq [data-acao='baixo'] {
+        grid-column: 1 / -1;
+        justify-self: center;
       }
 
       #controles .dir {
-        right: calc(0.7rem + env(safe-area-inset-right));
+        right: calc(0.35rem + env(safe-area-inset-right));
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.4rem;
       }
 
       #controles button {
@@ -73,13 +82,14 @@
         position: relative;
         display: grid;
         place-items: center;
-        width: 5.4rem;
-        height: 5.4rem;
+        width: 4.8rem;
+        height: 4.8rem;
+        opacity: 0.92;
         margin: 0;
         padding: 0;
         border: 0.16rem solid #f0c43a;
         border-radius: 1.15rem;
-        background: rgba(16, 24, 38, 0.78);
+        background: rgba(16, 24, 38, 0.55);
         color: #fff6e8;
         font-family: 'Segoe UI', system-ui, sans-serif;
         font-size: 1.7rem;
@@ -119,10 +129,10 @@
       }
 
       #controles .pulo {
-        width: 7rem;
-        height: 7rem;
-        font-size: 1.25rem;
-        background: rgba(240, 196, 58, 0.94);
+        width: 6.4rem;
+        height: 6.4rem;
+        font-size: 1.2rem;
+        background: rgba(240, 196, 58, 0.9);
         color: #1a120c;
       }
 
@@ -221,8 +231,8 @@
     <nav id="controles" aria-label="Controles">
       <div class="lado esq">
         <button type="button" data-acao="esquerda" aria-label="Esquerda">◄</button>
-        <button type="button" data-acao="baixo" aria-label="Agachar">▼</button>
         <button type="button" data-acao="direita" aria-label="Direita">►</button>
+        <button type="button" data-acao="baixo" aria-label="Agachar">▼</button>
       </div>
       <div class="lado dir">
         <button type="button" class="sumir" data-acao="invis" aria-label="Sumir"><span>SUMIR</span></button>

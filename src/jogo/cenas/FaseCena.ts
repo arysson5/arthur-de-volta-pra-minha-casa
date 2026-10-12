@@ -131,8 +131,9 @@ export class FaseCena extends Phaser.Scene {
     }
 
     this.enquadrarFase();
-    this.cameras.main.setBounds(0, 0, this.mundoLargura, this.mundoAltura);
-    this.cameras.main.startFollow(this.arthur, true, 0.14, 0.14);
+    this.cameras.main.setBounds(-u(360), 0, this.mundoLargura + u(360), this.mundoAltura);
+    this.cameras.main.startFollow(this.arthur, true, 0.2, 0.12);
+    this.cameras.main.centerOn(this.arthur.x, this.mundoAltura / 2);
     this.cameras.main.setRoundPixels(false);
 
     if (this.def.tema === 'caatinga') {
@@ -612,16 +613,18 @@ export class FaseCena extends Phaser.Scene {
   }
 
   private baterBlocos(): void {
-    const cabeca = this.arthur.y - this.arthur.displayHeight * 0.9;
-    if (this.arthur.corpo().velocity.y >= 0) return;
+    const corpo = this.arthur.corpo();
+    const subindo = corpo.velocity.y < 0 || corpo.blocked.up;
+    if (!subindo) return;
+    const cabeca = this.arthur.y - this.arthur.displayHeight * 0.92;
     for (const obj of this.blocos.getChildren()) {
       const bloco = obj as Phaser.Physics.Arcade.Sprite;
       if (bloco.getData('usado')) continue;
       const body = bloco.body as Phaser.Physics.Arcade.StaticBody;
-      const alcance = Math.max(TILE * 0.85, this.arthur.displayWidth * 0.4);
+      const alcance = Math.max(TILE * 0.95, this.arthur.displayWidth * 0.45);
       const acertou =
-        cabeca <= body.bottom + TILE * 0.45 &&
-        cabeca >= body.bottom - TILE * 0.9 &&
+        cabeca <= body.bottom + TILE * 0.75 &&
+        cabeca >= body.bottom - TILE * 1.2 &&
         this.arthur.x > body.left - alcance &&
         this.arthur.x < body.right + alcance;
       if (acertou) this.usarBloco(bloco);

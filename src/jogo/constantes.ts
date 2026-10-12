@@ -19,10 +19,12 @@ export function fonte(n: number): string {
 export const GRAVIDADE = 900 * ESCALA;
 export const VELOCIDADE = 145 * ESCALA;
 export const VELOCIDADE_AGACHADO = 62 * ESCALA;
-export const PULO = -370 * ESCALA;
-export const PULO_BOB = -410 * ESCALA;
+export const PULO = -405 * ESCALA;
+export const PULO_BOB = -455 * ESCALA;
 export const COYOTE = 140;
-export const BUFFER_PULO = 140;
+export const BUFFER_PULO = 160;
+/** Um toque no celular sobe este tempo inteiro antes de poder encurtar o arco. */
+export const PULO_MINIMO_MS = 210;
 export const INVISIVEL_MS = 3000;
 export const RECARGA_INVIS_MS = 10000;
 export const GRANDE_MS = 15000;
